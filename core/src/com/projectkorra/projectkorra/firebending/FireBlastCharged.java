@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.projectkorra.projectkorra.attribute.markers.DayNightFactor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -16,13 +15,11 @@ import org.bukkit.entity.TNTPrimed;
 import org.bukkit.util.Vector;
 
 import com.projectkorra.projectkorra.GeneralMethods;
-import com.projectkorra.projectkorra.Element.SubElement;
 import com.projectkorra.projectkorra.ability.AirAbility;
-import com.projectkorra.projectkorra.ability.BlueFireAbility;
 import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.ability.FireAbility;
 import com.projectkorra.projectkorra.attribute.Attribute;
-import com.projectkorra.projectkorra.avatar.AvatarState;
+import com.projectkorra.projectkorra.attribute.markers.DayNightFactor;
 import com.projectkorra.projectkorra.util.DamageHandler;
 import com.projectkorra.projectkorra.util.ParticleEffect;
 
@@ -175,9 +172,9 @@ public class FireBlastCharged extends FireAbility {
 			if (this.canDamageBlocks && this.explosionRadius > 0 && canFireGrief()) {
 				this.explosion = this.player.getWorld().spawn(this.location, TNTPrimed.class);
 				this.explosion.setFuseTicks(0);
-				double yield = this.explosionRadius;
+				double explosionYield = this.explosionRadius;
 
-				this.explosion.setYield((float) yield);
+				this.explosion.setYield((float) explosionYield);
 				EXPLOSIONS.put(this.explosion, this);
 			} else {
 				final List<Entity> entities = GeneralMethods.getEntitiesAroundPoint(this.location, this.damageRadius);
