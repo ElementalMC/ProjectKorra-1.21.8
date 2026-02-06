@@ -214,6 +214,11 @@ import com.projectkorra.projectkorra.waterbending.passive.FastSwim;
 import com.projectkorra.projectkorra.waterbending.passive.HydroSink;
 
 import net.md_5.bungee.api.ChatColor;
+import net.william278.huskclaims.api.BukkitHuskClaimsAPI;
+import net.william278.huskclaims.claim.Claim;
+import net.william278.huskclaims.libraries.cloplib.operation.OperationType;
+import net.william278.huskclaims.position.Position;
+import net.william278.huskclaims.user.OnlineUser;
 
 public class PKListener implements Listener {
 	ProjectKorra plugin;
@@ -1020,12 +1025,46 @@ public class PKListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerDamageByPlayer(final EntityDamageByEntityEvent e) {
 		final Entity source = e.getDamager();
 		final Entity entity = e.getEntity();
 		if (BendingPlayer.isWorldDisabled(entity.getWorld()) || GeneralMethods.isFakeEvent(e)) {
 			return;
+		}
+
+		// HuskClaims: Prevent claim owners and trusted players from damaging other players
+		// who are inside their claim.
+		if (Bukkit.getPluginManager().isPluginEnabled("HuskClaims")) {
+			if (source instanceof Player && entity instanceof Player) {
+				final Player attacker = (Player) source;
+				final Player target = (Player) entity;
+
+				final BukkitHuskClaimsAPI huskClaimsAPI = BukkitHuskClaimsAPI.getInstance();
+				final OnlineUser attackerUser = huskClaimsAPI.getOnlineUser(attacker);
+				
+				// Check the claim at the target's position
+				final Position targetPosition = huskClaimsAPI.getPosition(target.getLocation());
+				final java.util.Optional<Claim> targetClaimOpt = huskClaimsAPI.getClaimAt(targetPosition);
+				
+				// Only block if target is in a claim (not wilderness)
+				if (targetClaimOpt.isPresent()) {
+					final Claim targetClaim = targetClaimOpt.get();
+					final java.util.UUID attackerId = attacker.getUniqueId();
+					
+					// Check if attacker is the owner of the claim the target is in
+					final boolean isOwner = targetClaim.getOwner().filter(uuid -> uuid.equals(attackerId)).isPresent();
+					// Check if attacker is trusted (can break blocks) in the claim the target is in
+					final boolean isTrusted = huskClaimsAPI.isOperationAllowed(attackerUser, OperationType.BLOCK_BREAK, targetPosition);
+					
+					// If the attacker is the claim owner or trusted within the claim the target is in,
+					// cancel any damage they would do to that player.
+					if (isOwner || isTrusted) {
+						e.setCancelled(true);
+						return;
+					}
+				}
+			}
 		}
 
 		final FireBlastCharged fireball = FireBlastCharged.getFireball(source);

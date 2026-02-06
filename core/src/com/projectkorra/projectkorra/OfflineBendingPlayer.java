@@ -355,7 +355,10 @@ public class OfflineBendingPlayer {
                     final ConcurrentHashMap<Integer, String> abilitiesClone = new ConcurrentHashMap<>();
                     for (int i = 1; i <= 9; i++) {
                         final String ability = rs2.getString("slot" + i);
-                        abilitiesClone.put(i, ability);
+                        // ConcurrentHashMap does not allow null values, so only put non-null entries.
+                        if (ability != null) {
+                            abilitiesClone.put(i, ability);
+                        }
                     }
                     final long startTime = System.currentTimeMillis();
                     final long timeoutLength = 5_000; // How long until it should time out attempting to load addons in.

@@ -783,6 +783,7 @@ public class ConfigManager {
 			config.addDefault("Properties.RegionProtection.RespectHuskTowns", true);
 			config.addDefault("Properties.RegionProtection.RespectLWC", true);
 			config.addDefault("Properties.RegionProtection.RespectLands", true);
+			config.addDefault("Properties.RegionProtection.RespectHuskClaims", true);
 			config.addDefault("Properties.RegionProtection.Residence.Flag", "bending");
 			config.addDefault("Properties.RegionProtection.Residence.Respect", true);
 			config.addDefault("Properties.RegionProtection.Kingdoms.Respect", true);
