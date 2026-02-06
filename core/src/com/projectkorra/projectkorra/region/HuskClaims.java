@@ -32,12 +32,9 @@ public class HuskClaims extends RegionProtectionBase {
             return false; // No claim (wilderness) - allow bending
         }
 
-        final Claim claim = claimOpt.get();
-        if (claim.getOwner().filter(uuid -> uuid.equals(player.getUniqueId())).isPresent()) {
-            return false; // Player is claim owner - allow bending
-        }
-
-        // Block bending unless player has build/trust permissions
+        // Same concept as GriefPrevention/GriefDefender/Lands:
+        // Treat the region as protected (block bending) if the player does NOT
+        // have block-break/build/trust permissions at this position.
         return !huskClaimsAPI.isOperationAllowed(user, OperationType.BLOCK_BREAK, position);
     }
 }
